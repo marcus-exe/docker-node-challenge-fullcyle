@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  node:
+    build: 
+      context: ./node
+      dockerfile: Dockerfile
+    container_name: node
+    networks:
+      - node-network
+    restart: always
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: nginx
+    restart: always
+    ports:
+      - "8080:80"
+    networks:
+      - node-network
+    
+    depends_on:
+      - node
+    
+
+networks:
+  node-network:
+    driver: bridge
