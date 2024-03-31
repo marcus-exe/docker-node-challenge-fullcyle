@@ -9,6 +9,10 @@ services:
     networks:
       - node-network
     restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+
 
   nginx:
     build:
@@ -20,10 +24,29 @@ services:
       - "8080:80"
     networks:
       - node-network
-    
     depends_on:
       - node
-    
+
+  db: 
+    image: mysql:5.7
+    command: --innodb-use-native-aio=0
+    container_name: db
+    restart: always 
+    tty: true
+    volumes:
+      - ./mysql:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=nodedb
+      - MYSQL_ROOT_PASSWORD="root"
+    networks:
+      - node-network
+
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "db", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+
 
 networks:
   node-network:
