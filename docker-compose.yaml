@@ -13,7 +13,6 @@ services:
       db:
         condition: service_healthy
 
-
   nginx:
     build:
       context: ./nginx
@@ -40,11 +39,10 @@ services:
       - MYSQL_ROOT_PASSWORD="root"
     networks:
       - node-network
-
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "db", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
-      interval: 20s
-      timeout: 10s
+      test: ["CMD", "mysqladmin", "ping", "-h", "db","-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
       retries: 5
 
 
