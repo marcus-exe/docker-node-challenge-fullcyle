@@ -3,34 +3,34 @@ const app = express();
 const port = 3000;
 
 const config = {
-   host: 'db',
-   user: 'root',
-   password: '"root"',
-   database: 'nodedb'
+    host: 'db',
+    user: 'root',
+    password: '"root"',
+    database: 'nodedb'
 };
 const mysql = require('mysql');
 
 const connection = mysql.createConnection(config);
 
-// Function to fetch all names from the database
-const getAllNames = () => {
+// Function to fetch all names and IP addresses from the database
+const getAllNamesAndIPs = () => {
     return new Promise((resolve, reject) => {
-        const sql = 'SELECT name FROM people';
+        const sql = 'SELECT name, ip_address FROM people';
         connection.query(sql, (error, results) => {
             if (error) {
                 reject(error);
             } else {
-                const names = results.map(row => row.name);
-                resolve(names);
+                const data = results.map(row => ({ name: row.name, ip_address: row.ip_address }));
+                resolve(data);
             }
         });
     });
 };
 
-// Function to insert a new name into the database
-const insertName = (name) => {
+// Function to insert a new name and IP address into the database
+const insertNameAndIP = (name, ip_address) => {
     return new Promise((resolve, reject) => {
-        const sql = `INSERT INTO people(name) VALUES('${name}')`;
+        const sql = `INSERT INTO people(name, ip_address) VALUES('${name}', '${ip_address}')`;
         connection.query(sql, (error, results) => {
             if (error) {
                 reject(error);
@@ -43,20 +43,23 @@ const insertName = (name) => {
 
 app.get('/', async (req, res) => {
     try {
-        // Fetch all names from the database
-        const names = await getAllNames();
+        // Fetch all names and IP addresses from the database
+        const namesAndIPs = await getAllNamesAndIPs();
         
         // Generate a new name
-        const newName = 'Name ' + (names.length + 1);
+        const newName = 'Name ' + (namesAndIPs.length + 1);
         
-        // Insert the new name into the database
-        await insertName(newName);
+        // Get the actual IP address of the client
+        const clientIP = req.ip;
+        
+        // Insert the new name and client's IP address into the database
+        await insertNameAndIP(newName, clientIP);
 
-        // Send the list of names as a response
+        // Send the list of names and IP addresses as a response
         let htmlResponse = '<h1>Full Cycle</h1>';
         htmlResponse += '<ul>';
-        names.forEach(name => {
-            htmlResponse += `<li>${name}</li>`;
+        namesAndIPs.forEach(data => {
+            htmlResponse += `<li>${data.name} - ${data.ip_address}</li>`;
         });
         htmlResponse += '</ul>';
         res.send(htmlResponse);
