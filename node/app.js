@@ -59,7 +59,8 @@ app.get('/', async (req, res) => {
         let htmlResponse = '<h1>Full Cycle</h1>';
         htmlResponse += '<ul>';
         namesAndIPs.forEach(data => {
-            htmlResponse += `<li>${data.name} - ${data.ip_address}</li>`;
+            htmlResponse += `<li>${data.name}</li>`;
+            //htmlResponse += `<li>${data.name} - ${data.ip_address}</li>`;
         });
         htmlResponse += '</ul>';
         res.send(htmlResponse);
