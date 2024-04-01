@@ -9,7 +9,7 @@
    - access database
    - register information
 3) Nginx (nginx)
-   - acts as a in-between from port 8080 to port 3000
+   - acts as an in-between from port 8080 to port 3000
 
 ## To run in your machine: 
 ```
